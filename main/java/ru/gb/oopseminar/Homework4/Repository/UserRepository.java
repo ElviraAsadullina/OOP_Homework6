@@ -3,10 +3,13 @@ package ru.gb.oopseminar.Homework4.Repository;
 import ru.gb.oopseminar.Homework4.Model.Student;
 import ru.gb.oopseminar.Homework4.Model.Teacher;
 import ru.gb.oopseminar.Homework4.Model.User;
+import ru.gb.oopseminar.Homework4.Service.UserService;
+import ru.gb.oopseminar.Homework4.impls.UserServiceImpl;
 
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -15,7 +18,7 @@ public class UserRepository<T extends User> {
     String outputFileName = "Users.txt";
 
 
-    private void load() {
+    public void load() {
         users.clear();
         try(BufferedReader reader = new BufferedReader(new FileReader(outputFileName))){
             String line;
@@ -24,7 +27,7 @@ public class UserRepository<T extends User> {
                 tokens = line.split("_");
                 if ("Ученик".equals(tokens[1])) {
                     Student student = new Student(tokens[3], Float.parseFloat(tokens[5]),
-                            Integer.parseInt(tokens[7]), new Teacher(tokens[9]));
+                            Integer.parseInt(tokens[7]), new Teacher (tokens[9]));
                     users.add((T) student);
                 } else if ("Учитель".equals(tokens[1])) {
                     Teacher teacher = new Teacher(tokens[2]);
@@ -36,6 +39,7 @@ public class UserRepository<T extends User> {
         }
     }
 
+
     public void save(T user){
         load();
         if (!users.contains(user)) {
@@ -46,7 +50,8 @@ public class UserRepository<T extends User> {
                 System.out.println(exception.getMessage());
             }
         } else {
-            System.out.println("Пользователь уже существует!");
+            System.out.println("Пользователь уже существует!" + "\nУдалите текущий файл <Users.txt> и запустите программу!");
+            System.exit(0);
         }
     }
     public void saveAll(List<T> users){
@@ -61,6 +66,8 @@ public class UserRepository<T extends User> {
 
     public List<T> getUsers() {
         load();
+        Collections.sort(users, (o1, o2) -> o1.getClass().getName().
+                compareTo(o2.getClass().getName()));
         return users;
     }
 
@@ -91,5 +98,16 @@ public class UserRepository<T extends User> {
             return true;
         }
         return false;
+    }
+    public void sort(T user) {
+        load();
+        UserService userService = new UserServiceImpl();
+        List<T> bestStudents = new ArrayList<>();
+        for (User x : userService.getAllUsers()) {
+            if (x != null) {
+                T t = (T) x;
+                bestStudents.add(t);
+            }
+        }
     }
 }

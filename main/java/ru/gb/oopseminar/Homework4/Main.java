@@ -1,20 +1,24 @@
 package ru.gb.oopseminar.Homework4;
 
 
-import ru.gb.oopseminar.Homework4.Model.Student;
-import ru.gb.oopseminar.Homework4.Model.Teacher;
-import ru.gb.oopseminar.Homework4.Model.User;
-import ru.gb.oopseminar.Homework4.Service.UserService;
-import ru.gb.oopseminar.Homework4.View.UserView;
-import ru.gb.oopseminar.Homework4.impls.UserServiceImpl;
+import ru.gb.oopseminar.Homework4.Model.*;
+import ru.gb.oopseminar.Homework4.Service.*;
+import ru.gb.oopseminar.Homework4.View.*;
+import ru.gb.oopseminar.Homework4.impls.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
+import java.util.Comparator;
 
 
 public class Main extends JFrame {
     private static int generatingCounter = 0;
+
+    public static JFrame frame;
 
     public static void createGUI() {
 
@@ -22,14 +26,13 @@ public class Main extends JFrame {
         List<User> userList = userService.getAllUsers();
         UserView userView = new UserView(userList);
 
-        JFrame frame = new JFrame("ОБЩИЙ СПИСОК СТУДЕНТОВ И УЧИТЕЛЕЙ");
+        frame = new JFrame("ОБЩИЙ СПИСОК СТУДЕНТОВ И УЧИТЕЛЕЙ");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
 
         JTable table = getjTable(userView);
 
         JPanel buttons = getjPanel(userService, userList, table);
-        JPanel myText = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
         JScrollPane scrollPane = new JScrollPane(table);
 
@@ -44,8 +47,9 @@ public class Main extends JFrame {
 
     private static JPanel getjPanel(UserService userService, List<User> userList, JTable table) {
         StudentComparator sc = new StudentComparator();
+//        TeacherComparator tc = new TeacherComparator();
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JButton addStudent = new JButton("Новый студент");
+        JButton addStudent = new JButton("Новый ученик");
         addStudent.addActionListener(e -> {
             userService.add(new Student("< Ввод >" + generatingCounter++, 0.00f,0, new Teacher("Прокофьева Нина Петровна")));
             table.updateUI();
@@ -61,7 +65,7 @@ public class Main extends JFrame {
             userService.remove(idx);
             table.updateUI();
             JFrame frame = new JFrame();
-            JOptionPane.showMessageDialog(frame.getComponentAt(10,10), "Пользователь удален!!");
+            JOptionPane.showMessageDialog(frame.getComponentAt(10,10), "Пользователь удален!");
         });
         JButton saveAll = new JButton("Сохранить");
         saveAll.addActionListener(e -> {
@@ -70,10 +74,48 @@ public class Main extends JFrame {
             JOptionPane.showMessageDialog(frame.getComponentAt(10,10), "Данные сохранены!");
         });
         JButton additionally = new JButton("Дополнительно");
-        additionally.addActionListener(e -> {
-            JFrame frame = new JFrame();
-            JOptionPane.showMessageDialog(frame.getComponentAt(10,10), "В процессе...");
+        JPopupMenu popup = new JPopupMenu();
+        popup.add(new JMenuItem(new AbstractAction("Показать лучших учеников школы") {
+            public void actionPerformed(ActionEvent e) {
+                frame.setTitle("СПИСОК ЛУЧШИХ УЧЕНИКОВ ШКОЛЫ");
+                userList.clear();
+                List<Student> s = sc.compareByGradeBest();
+                for(Student i: s) {
+                    userList.add(i);
+                }
+                table.updateUI();
+            }
+        }));
+        popup.add(new JMenuItem(new AbstractAction("Показать учеников с плохой успеваемостью") {
+            public void actionPerformed(ActionEvent e) {
+                frame.setTitle("СПИСОК УЧЕНИКОВ С ПЛОХОЙ УСПЕВАЕМОСТЬЮ");
+                userList.clear();
+                List<Student> s = sc.compareByGradeWorst();
+                for(Student i: s) {
+                    userList.add(i);
+                }
+                table.updateUI();
+            }
+        }));
+        popup.add(new JMenuItem(new AbstractAction("Посмотреть рейтинг учителей") {
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(frame.getComponentAt(10,10), "В процессе...");
+//                frame.setTitle("РЕЙТИНГ УЧИТЕЛЕЙ ШКОЛЫ");
+//                userList.clear();
+//                List<Teacher> teach = tc.compareByGrade();
+//                for(User i: teach) {
+//                    userList.add(i);
+//                }
+//                System.out.println(userList);
+//                table.updateUI();
+            }
+        }));
+        additionally.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                popup.show(e.getComponent(), e.getX(), e.getY());
+            }
         });
+
         buttons.add(addStudent);
         buttons.add(addTeacher);
         buttons.add(removeTile);

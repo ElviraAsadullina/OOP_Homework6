@@ -1,7 +1,6 @@
 package ru.gb.oopseminar.Homework4.Model;
 
 import java.util.Objects;
-import java.util.logging.SocketHandler;
 
 public abstract class User {
 

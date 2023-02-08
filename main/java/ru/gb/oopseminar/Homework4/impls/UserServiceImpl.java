@@ -4,7 +4,6 @@ import ru.gb.oopseminar.Homework4.Model.User;
 import ru.gb.oopseminar.Homework4.Repository.UserRepository;
 import ru.gb.oopseminar.Homework4.Service.UserService;
 
-import javax.swing.*;
 import java.util.List;
 
 public class UserServiceImpl implements UserService {
@@ -59,4 +58,13 @@ public class UserServiceImpl implements UserService {
         repository.saveAll(users);
     }
 
+    @Override
+    public void sort(List<User> users) {
+        repository.sort((User) users);
+    }
+
+    @Override
+    public void sort(User user) {
+        repository.sort(user);
+    }
 }

@@ -1,5 +1,6 @@
 package ru.gb.oopseminar.Homework4.Model;
 
+
 import java.util.Objects;
 
 public class Student extends User {
@@ -37,6 +38,10 @@ public class Student extends User {
         this.year = year;
     }
 
+    public void setTeacher(Teacher teacher) {
+        this.teacher = teacher;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -57,7 +62,7 @@ public class Student extends User {
                 "Имя_" + this.getName() +
                 "_Средний балл_" + this.grade +
                 "_Класс_" + this.year +
-                "_Учитель_" + teacher.getName() +
+                "_Учитель_" + this.teacher.getName() +
                 "\n";
     }
 }

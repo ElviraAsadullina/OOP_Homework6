@@ -1,15 +1,19 @@
 package ru.gb.oopseminar.Homework4.Model;
 
-import javax.swing.*;
+import ru.gb.oopseminar.Homework4.Service.UserService;
+import ru.gb.oopseminar.Homework4.impls.UserServiceImpl;
+
 import java.util.List;
 import java.util.Objects;
 
 
 public class Teacher extends User {
     private List<Student> group;
+    public float grade;
 
     public Teacher(String name) {
         this.setName(name);
+//        this.grade = this.getGrade();
     }
 
     public List<Student> getGroup() {
@@ -19,6 +23,30 @@ public class Teacher extends User {
     public void setGroup(List<Student> group) {
         this.group = group;
     }
+
+    public float getGrade() {
+        float g = 0;
+        float avgG = 0;
+        UserService userService = new UserServiceImpl();
+        List<Student> s = userService.getAllUsers().stream()
+                .filter(Student.class::isInstance)
+                .map(x -> (Student) x)
+                .toList();
+//        List<Teacher> t = userService.getAllUsers().stream()
+//                .filter(Teacher.class::isInstance)
+//                .map(x -> (Teacher) x)
+//                .toList();
+            for (Student i : s) {
+                if (this.getName() == i.getTeacher().getName()) {
+                    g = g + i.getGrade();
+                }
+            }
+        avgG = g / s.size();
+        return avgG;
+    }
+//    public void setGrade(float grade) {
+//        this.grade = grade;
+//    }
 
     @Override
     public boolean equals(Object o) {
